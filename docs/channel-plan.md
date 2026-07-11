@@ -39,7 +39,7 @@ Keep a running list. Move items into the [content calendar](./content-calendar.m
 ## 5. Branding
 
 - **Channel name:** TODO
-- **Handle (@):** TODO — check availability at youtube.com
+- **Handle (@):** @DavidFitzgerald1988 — https://www.youtube.com/@DavidFitzgerald1988
 - **Logo / profile picture:** TODO
 - **Banner (2560×1440, safe area 1546×423):** TODO
 - **Color palette:** TODO
