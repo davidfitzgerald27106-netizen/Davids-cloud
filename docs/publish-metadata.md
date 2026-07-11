@@ -137,8 +137,8 @@ on, and small, honest ways to begin.
 
 ## Reminder: what you need before the publish command works
 1. The channel created + verified on YouTube.
-2. Google Cloud OAuth credentials saved as `automation/client_secret.json`
-   (see [`automation/README.md`](../automation/README.md)).
+2. Google Cloud OAuth credentials saved as `automation/client_secret.json` — follow
+   the click-by-click [OAuth setup guide](./oauth-setup-guide.md).
 3. The exported video file(s) and thumbnail image(s).
 
 Then the first run opens a browser to authorize, and every upload after is one command.
