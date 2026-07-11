@@ -1,0 +1,13 @@
+# YouTube API credentials — never commit these
+automation/client_secret.json
+automation/token.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+*.swp

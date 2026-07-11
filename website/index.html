@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Davids Cloud — YouTube Channel</title>
+  <meta name="description" content="The official home of the Davids Cloud YouTube channel." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <span class="brand">Davids&nbsp;Cloud</span>
+      <a class="nav-cta" href="#" data-channel-link>Subscribe</a>
+    </nav>
+    <div class="hero-inner">
+      <h1>Welcome to <span class="accent">Davids Cloud</span></h1>
+      <p class="tagline">A cloud of ideas — new videos every week.</p>
+      <a class="button" href="#" data-channel-link>▶ Watch on YouTube</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="latest">
+      <h2>Latest Video</h2>
+      <p class="section-sub">Drop your latest video ID below to feature it here.</p>
+      <div class="video-embed">
+        <!--
+          Replace VIDEO_ID with a real YouTube video ID, e.g. dQw4w9WgXcQ
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID" ... ></iframe>
+        -->
+        <div class="video-placeholder">
+          <span>Your featured video goes here</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="about">
+      <h2>About the Channel</h2>
+      <p class="about-text">
+        TODO — write a couple of sentences about what the channel is, who it's for,
+        and why people should subscribe. Keep it punchy.
+      </p>
+      <div class="pillars">
+        <div class="pillar"><h3>Pillar 1</h3><p>TODO — what you cover.</p></div>
+        <div class="pillar"><h3>Pillar 2</h3><p>TODO — what you cover.</p></div>
+        <div class="pillar"><h3>Pillar 3</h3><p>TODO — what you cover.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="connect">
+      <h2>Connect</h2>
+      <div class="socials">
+        <a href="#" data-channel-link>YouTube</a>
+        <a href="#">Twitter / X</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Davids Cloud. Built with a cloud of ideas.</p>
+  </footer>
+
+  <script>
+    // Set the copyright year.
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Point every channel link at your channel once you have the URL/handle.
+    // Example: "https://www.youtube.com/@yourhandle"
+    const CHANNEL_URL = "https://www.youtube.com/";
+    document.querySelectorAll("[data-channel-link]").forEach(function (a) {
+      a.href = CHANNEL_URL;
+      a.target = "_blank";
+      a.rel = "noopener";
+    });
+  </script>
+</body>
+</html>
