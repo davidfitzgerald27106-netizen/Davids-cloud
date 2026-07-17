@@ -1,0 +1,8 @@
+# Secrets — NEVER commit these
+.env
+
+# Build artifacts & deps
+node_modules/
+artifacts/
+cache/
+typechain-types/
