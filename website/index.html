@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Davids Cloud — YouTube Channel</title>
+  <meta name="description" content="Davids Cloud — soul awakening with positivity. Reflections and soulful inspiration for turning toward a positive headspace." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <span class="brand">Davids&nbsp;Cloud</span>
+      <a class="nav-cta" href="#" data-channel-link>Subscribe</a>
+    </nav>
+    <div class="hero-inner">
+      <h1>Welcome to <span class="accent">Davids Cloud</span></h1>
+      <p class="tagline">Soul awakening with positivity — new reflections every week.</p>
+      <a class="button" href="#" data-channel-link>▶ Watch on YouTube</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="latest">
+      <h2>Latest Video</h2>
+      <p class="section-sub">Drop your latest video ID below to feature it here.</p>
+      <div class="video-embed">
+        <!--
+          Replace VIDEO_ID with a real YouTube video ID, e.g. dQw4w9WgXcQ
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID" ... ></iframe>
+        -->
+        <div class="video-placeholder">
+          <span>Your featured video goes here</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="about">
+      <h2>About the Channel</h2>
+      <p class="about-text">
+        Davids Cloud is a gentle on-ramp to soul awakening — reflections and soulful
+        inspiration that help you turn toward a positive headspace and intuitively
+        reject what doesn't serve your spirit. Drawing on the spirit of Caroline Myss,
+        Mark Attwood, and the timeless soul of Whitney Houston.
+      </p>
+      <div class="pillars">
+        <div class="pillar"><h3>Soul Awakening</h3><p>How awakening begins — intuition, the soul's voice, and inner truth.</p></div>
+        <div class="pillar"><h3>Positive Headspace</h3><p>Practical shifts into positivity: reframes, gratitude, and protecting your peace.</p></div>
+        <div class="pillar"><h3>Intuitive Discernment</h3><p>Recognizing and gently rejecting negativity as your intuition reveals it.</p></div>
+        <div class="pillar"><h3>Soulful Inspiration</h3><p>Uplift through soul and strength — learning to love your own spirit.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="connect">
+      <h2>Connect</h2>
+      <div class="socials">
+        <a href="#" data-channel-link>YouTube</a>
+        <a href="#">Twitter / X</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Davids Cloud. Built with a cloud of ideas.</p>
+  </footer>
+
+  <script>
+    // Set the copyright year.
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Point every channel link at your channel once you have the URL/handle.
+    // Example: "https://www.youtube.com/@yourhandle"
+    const CHANNEL_URL = "https://www.youtube.com/@DavidFitzgerald1988";
+    document.querySelectorAll("[data-channel-link]").forEach(function (a) {
+      a.href = CHANNEL_URL;
+      a.target = "_blank";
+      a.rel = "noopener";
+    });
+  </script>
+</body>
+</html>
