@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bremskerl Material Selection Tool</title>
+<meta name="description" content="Preliminary friction material screening for industrial brake and clutch applications. Bremskerl North America.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#00A584">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bremskerl">
+<style>
+  :root { --g:#00A584; --ink:#152521; --mist:#E6F6F3; --line:#CCEDE6; --warn:#B95C1F; --fail:#B0322A; --sub:#4A5B56; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#F7FBFA; color:var(--ink); font-family:'Segoe UI', 'Open Sans', Arial, sans-serif; }
+  header { background:#fff; border-bottom:3px solid var(--g); padding:12px 22px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .logodot { width:34px; height:34px; border-radius:50%; background:var(--g); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:16px; font-family:'Arial Black', sans-serif; }
+  .wordmark { font-weight:900; font-size:22px; letter-spacing:-0.01em; font-family:'Arial Black', 'Segoe UI', sans-serif; }
+  .subtitle { font-size:13px; color:var(--sub); }
+  nav { margin-left:auto; display:flex; gap:4px; }
+  nav button { padding:6px 14px; font-size:12px; font-weight:700; border:none; border-radius:4px; cursor:pointer; background:var(--mist); color:var(--ink); }
+  nav button.active { background:var(--g); color:#fff; }
+  main { display:flex; gap:20px; padding:22px; max-width:1180px; margin:0 auto; flex-wrap:wrap; align-items:flex-start; }
+  .panel { flex:0 1 320px; min-width:280px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:18px; }
+  .results { flex:1 1 480px; min-width:320px; }
+  h2 { font-weight:900; font-size:15px; margin:0 0 12px; font-family:'Arial Black', sans-serif; }
+  label.f { display:block; margin-bottom:12px; }
+  label.f .lbl { font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3E524C; margin-bottom:4px; }
+  input[type=number], input[type=text], select { width:100%; padding:7px 9px; border:1px solid var(--line); border-radius:4px; font-size:13px; color:var(--ink); background:#fff; }
+  input:focus, select:focus { outline:2px solid var(--g); outline-offset:1px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .chk { display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; }
+  .card { background:#fff; border:1px solid var(--line); border-left:4px solid var(--g); border-radius:6px; padding:14px 16px; margin-bottom:12px; }
+  .card .head { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .gname { font-weight:900; font-size:17px; font-family:'Arial Black', sans-serif; }
+  .fam { font-size:12px; color:var(--sub); }
+  .score { margin-left:auto; font-weight:900; font-size:16px; font-family:'Arial Black', sans-serif; }
+  .meta { display:flex; gap:14px; font-size:12px; color:var(--sub); margin:4px 0 8px; flex-wrap:wrap; }
+  .meter { margin-bottom:7px; }
+  .meter .row { display:flex; justify-content:space-between; font-size:11px; color:var(--sub); }
+  .meter .track { height:8px; background:var(--mist); border-radius:2px; margin-top:2px; }
+  .meter .fill { height:8px; border-radius:2px; transition:width .3s; }
+  .warnline { font-size:12px; color:var(--warn); margin-top:4px; }
+  .note { font-size:12px; color:var(--sub); margin-top:6px; font-style:italic; }
+  .excl { background:#FCF6F5; border:1px solid #E7CDCA; border-radius:6px; padding:10px 14px; margin-top:8px; }
+  .failline { font-size:12px; color:var(--fail); margin-top:2px; }
+  .hint { background:var(--mist); border:1px dashed var(--g); border-radius:6px; padding:16px; font-size:13px; margin-bottom:14px; }
+  .nores { background:#fff; border:1px solid var(--fail); border-radius:6px; padding:16px; font-size:13px; }
+  footer.disc { flex-basis:100%; font-size:11.5px; color:#5A6B66; background:var(--mist); border-radius:6px; padding:10px 14px; line-height:1.55; }
+  .linkbtn { background:none; border:none; color:var(--sub); font-size:12px; cursor:pointer; padding:4px 0; text-decoration:underline; }
+  table { border-collapse:collapse; width:100%; font-size:12px; background:#fff; }
+  th { text-align:left; padding:8px 10px; background:var(--mist); font-weight:700; white-space:nowrap; }
+  td { padding:6px 10px; border-top:1px solid var(--line); }
+  td input { width:70px; padding:4px 6px; font-size:12px; }
+  .kbwrap { overflow-x:auto; border:1px solid var(--line); border-radius:6px; }
+  .resetbtn { margin-top:12px; padding:7px 16px; font-size:12px; font-weight:700; background:#fff; border:1px solid var(--g); color:var(--g); border-radius:4px; cursor:pointer; }
+  .counts { font-size:12px; color:var(--sub); }
+  .appmatch { color:var(--g); font-weight:700; }
+  .board { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 12px; }
+  .board .blabel { flex-basis:100%; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#3E524C; margin-bottom:2px; }
+  .pill { padding:5px 11px; border-radius:14px; font-size:12px; font-weight:700; background:var(--g); color:#fff; transition:all .4s ease; cursor:default; }
+  .pill.out { background:#ECE7E6; color:#948885; text-decoration:line-through; transform:scale(.9); opacity:.55; }
+  .printbtn { margin-left:auto; padding:6px 14px; font-size:12px; font-weight:700; background:var(--g); color:#fff; border:none; border-radius:4px; cursor:pointer; }
+  .printbtn:hover { background:#009074; }
+  #reportView { display:none; position:fixed; inset:0; overflow:auto; background:#fff; z-index:50; padding:26px; font-family:'Segoe UI', Arial, sans-serif; color:#152521; }
+  .rpactions { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .rpactions button { padding:8px 16px; font-size:12px; font-weight:700; border-radius:4px; cursor:pointer; border:none; }
+  .rpactions .primary { background:var(--g); color:#fff; }
+  .rpactions .secondary { background:#fff; border:1px solid var(--g); color:var(--g); }
+  .rpactions .quiet { background:var(--mist); color:var(--ink); }
+  .rpactions .tip { flex-basis:100%; font-size:11px; color:var(--sub); }
+  @media print {
+    header, main, #kbView, .rpactions, #installBar { display:none !important; }
+    #reportView { display:block !important; position:static; padding:0; }
+    body { background:#fff; }
+  }
+  #reportView .rphead { border-bottom:3px solid var(--g); padding-bottom:8px; margin-bottom:14px; }
+  #reportView h1 { font-size:20px; margin:0; font-family:'Arial Black', sans-serif; }
+  #reportView .rpmeta { font-size:11px; color:#4A5B56; margin-top:3px; }
+  #reportView h3 { font-size:13px; color:var(--g); margin:16px 0 6px; font-family:'Arial Black', sans-serif; }
+  #reportView table { width:100%; border-collapse:collapse; font-size:11px; }
+  #reportView th, #reportView td { border:1px solid #BBB; padding:5px 8px; text-align:left; }
+  #reportView th { background:#E6F6F3; }
+  #reportView .rpdisc { font-size:9.5px; color:#5A6B66; border:1px solid #CCEDE6; background:#F2FAF8; padding:8px 10px; margin-top:16px; line-height:1.5; }
+  #reportView .rpsign { margin-top:18px; font-size:11px; display:flex; gap:40px; }
+  #reportView .rpsign div { border-top:1px solid #888; padding-top:4px; min-width:180px; }
+  #kbView { padding:22px; max-width:1100px; margin:0 auto; }
+  .kbnote { font-size:12px; color:var(--sub); margin:0 0 14px; }
+  .vcard b.what { font-size:13px; color:var(--g); display:block; margin:2px 0; }
+  .vmeta { font-size:12px; color:var(--sub); line-height:1.5; }
+  #installBar { position:fixed; left:0; right:0; bottom:0; z-index:60; display:none; align-items:center; gap:12px; background:var(--ink); color:#fff; padding:12px 16px; font-size:13px; line-height:1.5; box-shadow:0 -2px 12px rgba(0,0,0,.25); flex-wrap:wrap; padding-bottom:calc(12px + env(safe-area-inset-bottom)); }
+  #installBar .ibtn { padding:8px 18px; font-size:13px; font-weight:700; background:var(--g); color:#fff; border:none; border-radius:4px; cursor:pointer; }
+  #installBar .ix { background:none; border:none; color:#B8C7C2; font-size:18px; cursor:pointer; margin-left:auto; padding:4px 8px; }
+  @media (max-width:720px){ main{padding:14px;} .panel{flex-basis:100%;} }
+</style>
+</head>
+<body>
+<header>
+  <span class="logodot">B</span>
+  <span class="wordmark">BREMSKERL</span>
+  <span class="subtitle">Material Selection Tool — preliminary screening</span>
+  <nav>
+    <button id="tabSelect" class="active" onclick="setTab('select')">Selector</button>
+    <button id="tabKb" onclick="setTab('kb')">Knowledge base</button>
+  </nav>
+</header>
+
+<main id="selectView">
+  <section class="panel">
+    <h2>Application specification</h2>
+    <label class="f"><div class="lbl">Customer / project</div>
+      <input type="text" id="customer" placeholder="e.g. WPT Power — high-cycle clutch" oninput="render()">
+    </label>
+    <label class="f"><div class="lbl">Prepared by</div>
+      <input type="text" id="preparedBy" placeholder="Your name" oninput="render()">
+    </label>
+    <label class="f"><div class="lbl">Segment</div>
+      <select id="seg" onchange="render()">
+        <option value="industrial">Industrial</option>
+        <option value="vehicle">Commercial vehicle</option>
+        <option value="rail">Rail</option>
+      </select>
+    </label>
+    <div id="industrialInputs">
+      <label class="f"><div class="lbl">Application type</div>
+        <select id="tag" onchange="render()">
+          <option value="">— not specified —</option>
+          <option value="crane">Overhead crane</option>
+          <option value="dincrane">DIN 15435 crane</option>
+          <option value="forklift">Forklift drum</option>
+          <option value="winch">Marine winch</option>
+          <option value="drumband">Drum / band brake</option>
+          <option value="drilling">Drilling equipment</option>
+          <option value="centrifuge">Sugar centrifuge</option>
+          <option value="statichold">High static hold</option>
+          <option value="heavyload">Heavy mechanical load</option>
+          <option value="clutch">Industrial clutch</option>
+          <option value="oilduty">Oil-immersed duty</option>
+          <option value="economy">Cost-driven / light duty</option>
+        </select>
+      </label>
+      <label class="f"><div class="lbl">Form required</div>
+        <select id="form" onchange="render()">
+          <option value="any">Any form</option>
+          <option value="roll">Roll lining</option>
+          <option value="strip">Flat strip</option>
+          <option value="sheet">Flat sheet</option>
+          <option value="ring">Molded ring</option>
+          <option value="crane">Crane lining</option>
+        </select>
+      </label>
+      <label class="f"><div class="lbl">Target coefficient of friction (dynamic)</div>
+        <input type="number" id="cof" step="0.01" min="0.2" max="0.6" placeholder="e.g. 0.40" oninput="render()">
+      </label>
+      <div class="grid2">
+        <label class="f"><div class="lbl">Max velocity (ft/s)</div><input type="number" id="vel" placeholder="e.g. 60" oninput="render()"></label>
+        <label class="f"><div class="lbl">Max pressure (psi)</div><input type="number" id="press" placeholder="e.g. 150" oninput="render()"></label>
+        <label class="f"><div class="lbl">Continuous temp (°F)</div><input type="number" id="contT" placeholder="e.g. 300" oninput="render()"></label>
+        <label class="f"><div class="lbl">Peak temp (°F)</div><input type="number" id="peakT" placeholder="e.g. 650" oninput="render()"></label>
+      </div>
+      <label class="f"><div class="lbl">Environment</div>
+        <select id="env" onchange="render()">
+          <option value="dry">Dry</option>
+          <option value="splash">Dry with occasional splash</option>
+          <option value="oil">Oil-immersed</option>
+        </select>
+      </label>
+      <label class="chk"><input type="checkbox" id="metalOk" checked onchange="render()"> Metallic content in lining is acceptable</label>
+    </div>
+    <p id="segNote" class="vmeta" style="display:none;"></p>
+  </section>
+
+  <section class="results" id="resultsArea"></section>
+
+  <footer class="disc"><b>Preliminary screening only.</b> Data from Bremskerl catalog Edition 8/15, determined by small-scale brake lining tests — per the catalog, results may not translate to practice and further testing may be required. Bremskerl produces formulations beyond this set. Every recommendation requires validation by BKNA engineering via the TQI / pre-engineering process before commitment to a customer. Questions: sales@bremskerl.com · (800) 939-4047 · <b>v1.0</b> · Knowledge base: Bremskerl catalog Edition 8/15</footer>
+</main>
+
+<div id="kbView" style="display:none;">
+  <h2>Knowledge base — industrial grades</h2>
+  <p class="kbnote">Source: Bremskerl catalog Edition 8/15 (small-scale brake lining test data). Values are editable for what-if screening — edits live in this browser session only and are <b>not</b> a substitute for engineering data.</p>
+  <div class="kbwrap"><table id="kbTable"></table></div>
+  <button class="resetbtn" onclick="resetKb()">Reset to catalog values</button>
+</div>
+
+<div id="reportView"></div>
+
+<div id="installBar"></div>
+
+<script>
+const CATALOG = [
+  { grade:"5300", family:"Flexible molded roll lining", cof:0.35, metal:"Steel", maxVel:118, maxPress:290, contTemp:480, intTemp:750, oil:"no", forms:["roll"], tags:["forklift","drumband","winch","antique"], note:"Recommended for forklift drum brakes. Also in wire-back version." },
+  { grade:"5505", family:"Flexible molded roll lining", cof:0.35, metal:"None", maxVel:118, maxPress:290, contTemp:480, intTemp:750, oil:"no", forms:["roll","strip"], tags:["drumband","winch","antique"], note:"Metal-free alternative to 5300." },
+  { grade:"5396", family:"Flexible molded roll lining", cof:0.35, metal:"Steel", maxVel:98, maxPress:290, contTemp:480, intTemp:840, oil:"no", forms:["roll","strip","crane"], tags:["crane","drumband","winch"], note:"Highest intermittent temp of the roll linings. Stocked for U.S. overhead crane sizes." },
+  { grade:"6905", family:"Flexible molded roll lining", cof:0.40, metal:"None", maxVel:100, maxPress:230, contTemp:480, intTemp:750, oil:"no", forms:["roll"], tags:["drumband","winch"], note:"Higher-friction metal-free roll lining." },
+  { grade:"4500", family:"Heavy duty woven roll lining", cof:0.39, metal:"Copper", maxVel:75, maxPress:290, contTemp:480, intTemp:750, oil:"no", forms:["roll"], tags:["statichold","drilling","winch","drumband"], note:"High static holding power, excellent fade resistance, gentle on mating surface." },
+  { grade:"4520", family:"Cotton woven roll lining", cof:0.46, metal:"None", maxVel:17, maxPress:290, contTemp:212, intTemp:392, oil:"unknown", forms:["roll"], tags:["centrifuge"], note:"Sugar centrifuge brake bands. OEM-equal performance." },
+  { grade:"4199", family:"Flat strip / molded ring", cof:0.38, metal:"None", maxVel:65, maxPress:175, contTemp:570, intTemp:660, oil:"yes", forms:["strip","ring"], tags:["oilduty","clutch"], note:"Oil-rated. Highest continuous temp in the industrial line." },
+  { grade:"7221", family:"Molded flat sheet", cof:0.42, metal:"Brass", maxVel:65, maxPress:360, contTemp:480, intTemp:750, oil:"no", forms:["sheet"], tags:["heavyload","clutch"], note:"High CoF, low brass content — built for heavy mechanical loads. Highest pressure rating." },
+  { grade:"9510", family:"Molded flat sheet", cof:0.34, metal:"None", maxVel:98, maxPress:189, contTemp:302, intTemp:572, oil:"no", forms:["sheet"], tags:["economy","clutch"], note:"Economical general-purpose grade for lighter duty." },
+  { grade:"4818", family:"Overhead crane lining", cof:0.40, metal:"Steel", maxVel:160, maxPress:230, contTemp:480, intTemp:840, oil:"no", forms:["crane","roll"], tags:["crane"], note:"Highest velocity rating in the line. Stocked U.S. crane sizes; also in roll form." },
+  { grade:"5387", family:"DIN 15435 crane lining", cof:0.40, metal:"Steel", maxVel:82, maxPress:230, contTemp:480, intTemp:750, oil:"yes", forms:["crane"], tags:["crane","oilduty","dincrane"], note:"OE-quality, high-energy DIN 15435 drum brakes. Oil-rated." },
+  { grade:"6230", family:"Molded ring", cof:0.42, metal:"None", maxVel:98, maxPress:290, contTemp:480, intTemp:750, oil:"no", forms:["ring"], tags:["clutch"], note:"Pre-molded rings — turn to size without scrapping plate stock." }
+];
+const VEHICLE_LINES = [
+  { grade:"8040 / 8010", what:"Air disc brake pads", fit:"By caliper: Bendix ADB22X, Knorr SB6/SB7/SN7/SK7, Meritor EX225/D-ELSA/D-LISA, WABCO PAN 17/19/22, Haldex DB22", cof:"FMVSS 121 & ECE R90 approved", apps:"Coach, transit bus, truck, trailer, refuse" },
+  { grade:"6275", what:"Mobile crane drum linings", fit:"500×120/160/180 and 410×180 brakes (WVA 17237–19723)", cof:"0.43µ design — OE lining", apps:"Terex/Demag AC, Grove GMK, Krupp KMK, Liebherr LTM, Tadano Faun ATF, Link-Belt ATC" },
+  { grade:"6386", what:"Heavy-haul trailer drum linings", fit:"SAF & BPW axles, 420×180/200 and 300×150/200 (WVA 19032–19574)", cof:"0.40µ design — OE lining", apps:"Heavy haul, modular and self-propelled trailers" },
+  { grade:"6500", what:"SISU axle drum linings", fit:"SISU SRDP-30-S, 410×180", cof:"0.40µ design — OE lining", apps:"Yard trucks / terminal tractors (Kalmar, Capacity, TICO, Balqon)" }
+];
+const FORM_LABELS = { any:"Any form", roll:"roll lining", strip:"flat strip", sheet:"flat sheet", ring:"molded ring", crane:"crane lining" };
+
+let kb = JSON.parse(JSON.stringify(CATALOG));
+let showExcluded = false;
+let lastScreen = null;
+
+const TAG_LABELS = { crane:"Overhead crane", dincrane:"DIN 15435 crane", forklift:"Forklift drum", winch:"Marine winch", drumband:"Drum / band brake", drilling:"Drilling equipment", centrifuge:"Sugar centrifuge", statichold:"High static hold", heavyload:"Heavy mechanical load", clutch:"Industrial clutch", oilduty:"Oil-immersed duty", economy:"Cost-driven / light duty" };
+const ENV_LABELS = { dry:"Dry", splash:"Dry with occasional splash", oil:"Oil-immersed" };
+
+let lastReportBody = "";
+
+function buildReportBody(){
+  if (!lastScreen) return "";
+  const { q, results, excluded } = lastScreen;
+  const now = new Date();
+  const customer = val("customer") || "—";
+  const preparedBy = val("preparedBy") || "—";
+
+  const specRows = [];
+  if (q.tag) specRows.push(["Application type", TAG_LABELS[q.tag]]);
+  if (q.form !== "any") specRows.push(["Form required", FORM_LABELS[q.form]]);
+  if (q.cof) specRows.push(["Target CoF (dynamic)", q.cof.toFixed(2) + " µ"]);
+  if (q.vel) specRows.push(["Max velocity", q.vel + " ft/s"]);
+  if (q.press) specRows.push(["Max pressure", q.press + " psi"]);
+  if (q.contT) specRows.push(["Continuous temperature", q.contT + " °F"]);
+  if (q.peakT) specRows.push(["Peak temperature", q.peakT + " °F"]);
+  specRows.push(["Environment", ENV_LABELS[q.env]]);
+  specRows.push(["Metallic content acceptable", q.metalOk ? "Yes" : "No"]);
+
+  const top = results.slice(0, 3);
+  let rp = '<div class="rphead"><h1>BREMSKERL &nbsp;·&nbsp; Material Screening Summary</h1>' +
+    '<div class="rpmeta">Bremskerl North America, Inc. · 1291 Humbracht Circle, Bartlett, IL 60103 · (800) 939-4047 · sales@bremskerl.com<br>' +
+    'Generated ' + now.toLocaleDateString() + ' ' + now.toLocaleTimeString() + ' · Customer / project: <b>' + esc(customer) + '</b> · Prepared by: <b>' + esc(preparedBy) + '</b></div></div>';
+
+  rp += '<h3>Application specification (as entered)</h3><table><tbody>' +
+    specRows.map(r=>'<tr><td style="width:40%;"><b>' + r[0] + '</b></td><td>' + esc(r[1]) + '</td></tr>').join("") + '</tbody></table>';
+
+  rp += '<h3>Preliminary candidates — top ' + top.length + ' of ' + results.length + ' passing</h3>';
+  if (top.length){
+    rp += '<table><thead><tr><th>Grade</th><th>Family</th><th>Score</th><th>CoF</th><th>Utilization vs. limits</th><th>Cautions</th></tr></thead><tbody>' +
+      top.map(r=>'<tr><td><b>Bremskerl ' + esc(r.m.grade) + '</b></td><td>' + esc(r.m.family) + '</td><td>' + r.score + '</td><td>' + r.m.cof.toFixed(2) + 'µ</td><td>' +
+        (r.utils.length ? r.utils.map(u=>u.axis + ": " + Math.round(Math.min(u.u*100,100)) + "%").join(" · ") : "no numeric constraints entered") +
+        '</td><td>' + (r.warns.length ? r.warns.map(esc).join("; ") : "—") + '</td></tr>').join("") + '</tbody></table>';
+  } else {
+    rp += '<p style="font-size:11px;">No standard catalog grade passes the entered constraints. Recommend full TQI capture and engineering consult for material development options.</p>';
+  }
+
+  if (excluded.length){
+    rp += '<h3>Excluded grades and reasons</h3><table><thead><tr><th>Grade</th><th>Reason(s)</th></tr></thead><tbody>' +
+      excluded.map(e=>'<tr><td><b>' + esc(e.m.grade) + '</b></td><td>' + e.fails.map(esc).join("; ") + '</td></tr>').join("") + '</tbody></table>';
+  }
+
+  rp += '<h3>Next step</h3><p style="font-size:11px;">This screening is the input to — not a substitute for — the Bremskerl pre-engineering process. Complete the TQI (Form 1045/2) and hand off with a named sales owner, named engineering owner, and a committed response date to the customer.</p>';
+
+  rp += '<div class="rpdisc"><b>Preliminary screening only.</b> Material data from Bremskerl catalog Edition 8/15, determined by small-scale brake lining tests; per the catalog, results may not be compatible to practice and further tests may be required. Bremskerl produces formulations beyond this catalog set. No commitment to a customer should be made from this summary without validation by BKNA engineering.</div>';
+
+  rp += '<div class="rpsign"><div>Sales owner / date</div><div>Engineering owner / date</div><div>Committed response date</div></div>';
+  return rp;
+}
+
+const REPORT_CSS = '.rphead{border-bottom:3px solid #00A584;padding-bottom:8px;margin-bottom:14px}h1{font-size:20px;margin:0;font-family:"Arial Black",Arial,sans-serif}.rpmeta{font-size:11px;color:#4A5B56;margin-top:3px}h3{font-size:13px;color:#00A584;margin:16px 0 6px;font-family:"Arial Black",Arial,sans-serif}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #BBB;padding:5px 8px;text-align:left}th{background:#E6F6F3}.rpdisc{font-size:9.5px;color:#5A6B66;border:1px solid #CCEDE6;background:#F2FAF8;padding:8px 10px;margin-top:16px;line-height:1.5}.rpsign{margin-top:18px;font-size:11px;display:flex;gap:40px}.rpsign div{border-top:1px solid #888;padding-top:4px;min-width:180px}body{font-family:"Segoe UI",Arial,sans-serif;color:#152521;margin:24px}';
+
+function printSummary(){
+  lastReportBody = buildReportBody();
+  if (!lastReportBody) return;
+  document.getElementById("reportView").innerHTML =
+    '<div class="rpactions">' +
+    '<button class="primary" onclick="doPrint()">Print / Save as PDF</button>' +
+    '<button class="secondary" onclick="downloadReport()">Download report file</button>' +
+    '<button class="quiet" onclick="closeReport()">Back to selector</button>' +
+    '<span class="tip">If the print dialog doesn’t open here (some embedded viewers block it), use Download — the report file opens its own print dialog when opened.</span>' +
+    '</div>' + lastReportBody;
+  document.getElementById("reportView").style.display = "block";
+}
+
+function doPrint(){
+  try { window.print(); }
+  catch(e){ downloadReport(); }
+}
+
+function closeReport(){
+  document.getElementById("reportView").style.display = "none";
+}
+
+function downloadReport(){
+  const customer = (val("customer") || "screening").replace(/[^a-z0-9]+/gi, "-").slice(0, 40);
+  const dt = new Date().toISOString().slice(0, 10);
+  const doc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bremskerl Screening Summary</title>' +
+    '<style>' + REPORT_CSS + '</style></head><body>' + lastReportBody +
+    '<scr' + 'ipt>window.onload=function(){setTimeout(function(){try{window.print()}catch(e){}},300)};</scr' + 'ipt></body></html>';
+  try {
+    const blob = new Blob([doc], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Bremskerl-Screening-" + customer + "-" + dt + ".html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  } catch(e) {
+    alert("Download blocked by this viewer. Open the tool in a regular browser tab and try again.");
+  }
+}
+
+function num(id){ const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? 0 : v; }
+function val(id){ return document.getElementById(id).value; }
+
+function screen(q){
+  const results = [], excluded = [];
+  for (const m of kb){
+    const fails = [];
+    if (q.form !== "any" && !m.forms.includes(q.form)) fails.push("Not offered as " + FORM_LABELS[q.form]);
+    if (q.vel && q.vel > m.maxVel) fails.push("Velocity " + q.vel + " ft/s exceeds " + m.maxVel + " ft/s limit");
+    if (q.press && q.press > m.maxPress) fails.push("Pressure " + q.press + " psi exceeds " + m.maxPress + " psi limit");
+    if (q.contT && q.contT > m.contTemp) fails.push("Continuous " + q.contT + "°F exceeds " + m.contTemp + "°F limit");
+    if (q.peakT && q.peakT > m.intTemp) fails.push("Peak " + q.peakT + "°F exceeds " + m.intTemp + "°F intermittent limit");
+    if (q.env === "oil" && m.oil !== "yes") fails.push("Not rated for oil immersion");
+    if (!q.metalOk && m.metal !== "None") fails.push("Contains " + m.metal.toLowerCase() + " — metal excluded");
+    if (fails.length){ excluded.push({m, fails}); continue; }
+
+    const utils = [];
+    if (q.vel) utils.push({axis:"Velocity", u:q.vel/m.maxVel, d:q.vel + " / " + m.maxVel + " ft/s"});
+    if (q.press) utils.push({axis:"Pressure", u:q.press/m.maxPress, d:q.press + " / " + m.maxPress + " psi"});
+    if (q.contT) utils.push({axis:"Cont. temp", u:q.contT/m.contTemp, d:q.contT + " / " + m.contTemp + " °F"});
+    if (q.peakT) utils.push({axis:"Peak temp", u:q.peakT/m.intTemp, d:q.peakT + " / " + m.intTemp + " °F"});
+
+    let headroom = 70;
+    if (utils.length){
+      headroom = utils.reduce((s,x)=>{
+        const u = x.u; let v;
+        if (u <= 0.7) v = 100;
+        else if (u <= 0.85) v = 100 - ((u-0.7)/0.15)*40;
+        else v = 60 - ((u-0.85)/0.15)*40;
+        return s+v;
+      },0)/utils.length;
+    }
+    let cofScore = 70;
+    if (q.cof){ cofScore = Math.max(0, 100 - (Math.abs(q.cof - m.cof)/0.10)*100); }
+    let appScore = 55;
+    if (q.tag && m.tags.includes(q.tag)) appScore = 100;
+
+    const score = Math.round(cofScore*0.32 + headroom*0.38 + appScore*0.30);
+    const warns = utils.filter(x=>x.u>0.85).map(x=>x.axis + " at " + Math.round(x.u*100) + "% of limit — thin margin");
+    if (q.env==="splash" && m.oil==="no") warns.push("Catalog: occasional splashes not detrimental — confirm exposure level");
+    if (q.env!=="dry" && m.oil==="unknown") warns.push("Oil compatibility not tested per catalog");
+    results.push({m, score, utils, warns, appMatch: q.tag && m.tags.includes(q.tag)});
+  }
+  results.sort((a,b)=>b.score-a.score);
+  return {results, excluded};
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+function render(){
+  const seg = val("seg");
+  const area = document.getElementById("resultsArea");
+  const indInputs = document.getElementById("industrialInputs");
+  const segNote = document.getElementById("segNote");
+  indInputs.style.display = seg==="industrial" ? "" : "none";
+  segNote.style.display = seg==="industrial" ? "none" : "";
+  segNote.textContent = seg==="vehicle"
+    ? "Commercial-vehicle linings are selected by caliper or axle fitment, not by spec screening. Reference lines are shown on the right."
+    : "Rail materials (disc pads, brake blocks, AAR M-997 high-friction shoes) are application-engineered and approval-driven. Route rail enquiries through the TQI to engineering.";
+
+  if (seg==="vehicle"){
+    area.innerHTML = VEHICLE_LINES.map(v =>
+      '<article class="card vcard"><div class="gname">Bremskerl ' + esc(v.grade) + '</div><b class="what">' + esc(v.what) + '</b>' +
+      '<div class="vmeta"><div><b>Fitment:</b> ' + esc(v.fit) + '</div><div><b>Friction:</b> ' + esc(v.cof) + '</div><div><b>Applications:</b> ' + esc(v.apps) + '</div></div></article>').join("");
+    return;
+  }
+  if (seg==="rail"){
+    area.innerHTML = '<div class="card" style="border-left-color:var(--line);"><b>Rail is engineering-led.</b><div class="vmeta" style="margin-top:6px;">Disc pads and brake blocks for freight and transit are matched to vehicle, duty cycle, and approval regime (AAR M-997, UIC, transit authority specs) — there is no shortcut screen. Capture the TQI, attach the vehicle and duty data, and hand off to engineering with an owner and a date.</div></div>';
+    return;
+  }
+
+  const q = { tag:val("tag"), form:val("form"), env:val("env"), metalOk:document.getElementById("metalOk").checked,
+              cof:num("cof"), vel:num("vel"), press:num("press"), contT:num("contT"), peakT:num("peakT") };
+  const {results, excluded} = screen(q);
+  const hasInput = q.cof||q.vel||q.press||q.contT||q.peakT||q.tag;
+  lastScreen = { q, results, excluded };
+
+  const passSet = new Set(results.map(r=>r.m.grade));
+  let html = '<div class="board"><span class="blabel">Grade field — watch materials drop as constraints tighten</span>' +
+    kb.map(m=>{
+      const out = !passSet.has(m.grade);
+      const reason = out ? (excluded.find(e=>e.m.grade===m.grade)||{fails:[]}).fails.join("; ") : "passes all entered constraints";
+      return '<span class="pill' + (out?' out':'') + '" title="' + esc(reason) + '">' + esc(m.grade) + '</span>';
+    }).join("") + '</div>';
+
+  html += '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;"><h2 style="margin:0;">Candidates</h2><span class="counts">' + results.length + ' pass · ' + excluded.length + ' excluded</span><button class="printbtn" onclick="printSummary()">Print screening summary</button></div>';
+  if (!hasInput) html += '<div class="hint">Enter what you know — every field is optional. With no inputs, all grades pass and ranking is neutral. The more of the TQI you feed it, the sharper the ranking.</div>';
+
+  html += results.map(r=>{
+    const sc = r.score>=75 ? "var(--g)" : r.score>=55 ? "var(--warn)" : "var(--fail)";
+    const oilTxt = r.m.oil==="yes"?"rated":r.m.oil==="no"?"splash-tolerant only":"not tested";
+    return '<article class="card"><div class="head"><span class="gname">Bremskerl ' + esc(r.m.grade) + '</span><span class="fam">' + esc(r.m.family) + '</span><span class="score" style="color:' + sc + ';">' + r.score + '</span></div>' +
+    '<div class="meta"><span>CoF <b>' + r.m.cof.toFixed(2) + 'µ</b></span><span>Metal: <b>' + esc(r.m.metal) + '</b></span><span>Oil: <b>' + oilTxt + '</b></span>' + (r.appMatch?'<span class="appmatch">✓ application match</span>':'') + '</div>' +
+    r.utils.map(u=>{
+      const pct = Math.min(u.u*100,100);
+      const col = u.u>0.85?"var(--fail)":u.u>0.7?"var(--warn)":"var(--g)";
+      return '<div class="meter"><div class="row"><span>' + u.axis + '</span><span>' + u.d + ' · <b style="color:' + col + ';">' + Math.round(pct) + '%</b> of limit</span></div><div class="track"><div class="fill" style="width:' + pct + '%;background:' + col + ';"></div></div></div>';
+    }).join("") +
+    r.warns.map(w=>'<div class="warnline">⚠ ' + esc(w) + '</div>').join("") +
+    '<div class="note">' + esc(r.m.note) + '</div></article>';
+  }).join("");
+
+  if (!results.length) html += '<div class="nores">No standard grade passes these constraints. That doesn’t end the conversation — Bremskerl produces formulations beyond this catalog set. Capture the full TQI and route to engineering for a material development consult.</div>';
+
+  if (excluded.length){
+    html += '<button class="linkbtn" onclick="showExcluded=!showExcluded;render();">' + (showExcluded?"Hide":"Show") + ' ' + excluded.length + ' excluded grade' + (excluded.length>1?'s':'') + '</button>';
+    if (showExcluded) html += excluded.map(e=>'<article class="excl"><b style="font-size:13px;">Bremskerl ' + esc(e.m.grade) + '</b> <span class="fam">' + esc(e.m.family) + '</span>' + e.fails.map(f=>'<div class="failline">✕ ' + esc(f) + '</div>').join("") + '</article>').join("");
+  }
+  area.innerHTML = html;
+}
+
+function renderKb(){
+  const cols = ["cof","metal","maxVel","maxPress","contTemp","intTemp","oil"];
+  let html = '<thead><tr><th>Grade</th><th>CoF (design)</th><th>Metal</th><th>Max vel (ft/s)</th><th>Max press (psi)</th><th>Cont. temp (°F)</th><th>Interm. temp (°F)</th><th>Oil-rated</th></tr></thead><tbody>';
+  kb.forEach((m,i)=>{
+    html += '<tr><td><b>' + esc(m.grade) + '</b><div style="color:var(--sub);font-size:11px;">' + esc(m.family) + '</div></td>' +
+      cols.map(k=>'<td><input value="' + esc(m[k]) + '" onchange="editKb(' + i + ',\'' + k + '\',this.value)"></td>').join("") + '</tr>';
+  });
+  document.getElementById("kbTable").innerHTML = html + '</tbody>';
+}
+
+function editKb(i,k,v){
+  kb[i][k] = (k==="metal"||k==="oil"||k==="grade") ? v : (parseFloat(v)||0);
+  render();
+}
+function resetKb(){ kb = JSON.parse(JSON.stringify(CATALOG)); renderKb(); render(); }
+
+function setTab(t){
+  document.getElementById("selectView").style.display = t==="select"?"":"none";
+  document.getElementById("kbView").style.display = t==="kb"?"":"none";
+  document.getElementById("tabSelect").className = t==="select"?"active":"";
+  document.getElementById("tabKb").className = t==="kb"?"active":"";
+  if (t==="kb") renderKb();
+}
+
+render();
+
+/* ---- App install (PWA) ---- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+
+(function(){
+  const bar = document.getElementById("installBar");
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  const dismissed = localStorage.getItem("bkInstallDismissed") === "1";
+  if (isStandalone || dismissed) return;
+
+  function dismiss(){ bar.style.display = "none"; localStorage.setItem("bkInstallDismissed", "1"); }
+  window.bkDismissInstall = dismiss;
+
+  let deferredPrompt = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    bar.innerHTML = '<span>📲 <b>Install this tool as an app</b> — home-screen icon, full screen, works offline.</span>' +
+      '<button class="ibtn" onclick="bkDoInstall()">Install</button>' +
+      '<button class="ix" onclick="bkDismissInstall()" title="Dismiss">✕</button>';
+    bar.style.display = "flex";
+  });
+  window.bkDoInstall = async function(){
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    dismiss();
+  };
+
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (isIOS) {
+    bar.innerHTML = '<span>📲 <b>Install this tool as an app:</b> tap the Share button <span style="border:1px solid #7FE0CD;border-radius:4px;padding:0 6px;">&#x2191;</span> in Safari, then <b>&ldquo;Add to Home Screen&rdquo;</b>.</span>' +
+      '<button class="ix" onclick="bkDismissInstall()" title="Dismiss">✕</button>';
+    bar.style.display = "flex";
+  }
+})();
+</script>
+</body>
+</html>

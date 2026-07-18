@@ -6,6 +6,7 @@ Cloud of Ideas — the home base for launching and running a YouTube channel.
 
 | Folder | What it's for |
 |--------|---------------|
+| [`material-selector/`](./material-selector) | Bremskerl Material Selection Tool as an installable mobile app (PWA) for Android & iPhone. |
 | [`docs/`](./docs) | Channel plan, content calendar, launch checklist, About-section copy, and video scripts. |
 | [`automation/`](./automation) | A Python script to upload videos via the YouTube Data API. |
 | [`website/`](./website) | A landing page to promote the channel and embed videos. |
