@@ -188,6 +188,7 @@ class MainActivity : Activity() {
         super.onResume()
         if (startRequested) {
             startRequested = false
+            intent = Intent(this, MainActivity::class.java)
             if (!ListenService.running && hasMic()) turnOn()
         }
         handler.post(refresher)

@@ -15,6 +15,7 @@ import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.AudioRecordingConfiguration
 import android.media.MediaRecorder
+import android.media.ToneGenerator
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -77,7 +78,7 @@ class ListenService : Service() {
             } catch (e: Exception) {
                 false
             }
-            if (othersRecording) {
+            if (othersRecording || inCall()) {
                 setStatus(PAUSED_TEXT)
                 main.postDelayed(this, RECHECK_MS)
             } else {
@@ -85,6 +86,9 @@ class ListenService : Service() {
             }
         }
     }
+
+    /** True during a phone call, a ringing phone, or another app's voice session. */
+    private fun inCall(): Boolean = audio.mode != AudioManager.MODE_NORMAL
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -183,7 +187,7 @@ class ListenService : Service() {
                 RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                maxOf(minBuffer, FRAME * 8)
+                maxOf(minBuffer, RATE * 4)
             )
             if (record.state != AudioRecord.STATE_INITIALIZED) {
                 throw IllegalStateException("microphone not available")
@@ -201,15 +205,25 @@ class ListenService : Service() {
             var gateOpen = false
             var quietFrames = 0
             var openFrames = 0
+            var frames = 0
 
             while (capturing) {
                 val n = record.read(buffer, 0, FRAME)
                 if (n < 0) throw IllegalStateException("microphone read failed ($n)")
                 if (n == 0) continue
 
+                frames += 1
+                if (frames % 10 == 0 && inCall()) {
+                    // A call or voice session started: release the microphone entirely.
+                    capturing = false
+                    setStatus(PAUSED_TEXT)
+                    main.postDelayed(resumeCheck, RECHECK_MS)
+                    break
+                }
+
                 val rms = rms(buffer, n)
                 level = rms.toInt()
-                val loud = rms > maxOf(MIN_GATE, floor * 3.0)
+                val loud = rms > maxOf(MIN_GATE, floor * 2.5)
 
                 if (!gateOpen) {
                     if (loud) {
@@ -319,6 +333,7 @@ class ListenService : Service() {
 
         // Let go of the microphone so the app being opened can use it.
         stopCapture()
+        chirp()
         wakeScreen()
         val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         if (keyguard.isKeyguardLocked) {
@@ -344,6 +359,17 @@ class ListenService : Service() {
         }
         main.removeCallbacks(resumeCheck)
         main.postDelayed(resumeCheck, RESUME_MS)
+    }
+
+    /** A short tone, so you know it heard you without looking at the phone. */
+    private fun chirp() {
+        try {
+            val tone = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 70)
+            tone.startTone(ToneGenerator.TONE_PROP_ACK, 150)
+            main.postDelayed({ tone.release() }, 600)
+        } catch (e: Exception) {
+            // no tone available; not important
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -402,9 +428,9 @@ class ListenService : Service() {
         private const val RATE = 16000
         private const val FRAME = 1600            // 100 ms of audio
         private const val PRE_ROLL_FRAMES = 5     // 500 ms kept from before the sound
-        private const val QUIET_FRAMES = 8        // 800 ms of quiet ends an utterance
+        private const val QUIET_FRAMES = 6        // 600 ms of quiet ends an utterance
         private const val MAX_OPEN_FRAMES = 80    // never analyse more than 8 s in one go
-        private const val MIN_GATE = 250.0        // lowest volume that counts as sound
+        private const val MIN_GATE = 100.0        // lowest volume that counts as sound
         private const val MAX_GAP_SECONDS = 0.45  // longest pause allowed inside the phrase
 
         private const val COOLDOWN_MS = 5000L
