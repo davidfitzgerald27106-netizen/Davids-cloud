@@ -1,5 +1,6 @@
 package app.wakephrase
 
+import android.app.KeyguardManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -50,6 +51,9 @@ class ListenService : Service() {
     private var sessionId = -1
 
     private var lastFire = 0L
+
+    // Keeps the listening loop running while the screen is off.
+    private var cpuLock: PowerManager.WakeLock? = null
 
     private val recordingWatcher = object : AudioManager.AudioRecordingCallback() {
         override fun onRecordingConfigChanged(configs: MutableList<AudioRecordingConfiguration>?) {
@@ -103,6 +107,9 @@ class ListenService : Service() {
         }
         running = true
         status = "Loading speech model"
+        cpuLock = (getSystemService(Context.POWER_SERVICE) as PowerManager)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "wakephrase:listen")
+            .also { it.acquire() }
         audio.registerAudioRecordingCallback(recordingWatcher, main)
         StorageService.unpack(
             this, "model-en-us", "model",
@@ -133,6 +140,12 @@ class ListenService : Service() {
             // never registered
         }
         stopCapture()
+        try {
+            cpuLock?.let { if (it.isHeld) it.release() }
+        } catch (e: Exception) {
+            // already released
+        }
+        cpuLock = null
         model?.close()
         model = null
         silenced = false
@@ -307,9 +320,28 @@ class ListenService : Service() {
         // Let go of the microphone so the app being opened can use it.
         stopCapture()
         wakeScreen()
-        val opened = Launcher.open(this)
-        setStatus(if (opened) "Heard it. Opened Claude." else "Heard it, but could not open Claude.")
-        if (opened && Prefs.autoVoice(prefs) && TapService.connected) TapService.request()
+        val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (keyguard.isKeyguardLocked) {
+            // Locked: light the screen and ask for a normal unlock first.
+            val opened = try {
+                startActivity(
+                    Intent(this, WakeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+                true
+            } catch (e: Exception) {
+                false
+            }
+            setStatus(
+                if (opened) "Heard it. Waiting for the phone to unlock."
+                else "Heard it, but could not wake the phone."
+            )
+        } else {
+            val opened = Launcher.open(this)
+            setStatus(
+                if (opened) "Heard it. Opened Claude." else "Heard it, but could not open Claude."
+            )
+            if (opened && Prefs.autoVoice(prefs) && TapService.connected) TapService.request()
+        }
         main.removeCallbacks(resumeCheck)
         main.postDelayed(resumeCheck, RESUME_MS)
     }

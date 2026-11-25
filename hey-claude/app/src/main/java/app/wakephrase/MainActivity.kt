@@ -166,7 +166,8 @@ class MainActivity : Activity() {
         column.addView(TextView(this).apply {
             text = "Good to know:\n" +
                 "- After a restart of the phone, tap the reminder to turn listening back on.\n" +
-                "- It cannot unlock the phone. From a locked screen it wakes the display.\n" +
+                "- It keeps listening with the screen off. If the phone is locked it wakes the " +
+                "screen and asks for your normal unlock, then opens Claude.\n" +
                 "- It steps aside while another app is using the microphone.\n" +
                 "- Auto voice mode is optional. If Accessibility shows this app greyed out, " +
                 "open the app's info page, tap the three dots, and choose Allow restricted settings.\n" +

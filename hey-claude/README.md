@@ -16,7 +16,8 @@ affiliated with Anthropic.
 
 ## What it does not do
 
-- It cannot unlock the phone. From a locked screen it only wakes the display.
+- It cannot bypass the lock. From a locked screen it wakes the display and asks
+  for your normal unlock (face, fingerprint or PIN), then opens Claude.
 - It does not start Claude's voice mode unless you switch on the optional
   Accessibility permission. With it on, the app taps the voice button for you,
   only in the seconds after the wake phrase, and only inside the Claude app.

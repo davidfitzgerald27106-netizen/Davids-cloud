@@ -33,6 +33,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".WakeActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:turnScreenOn="true" />
+
         <service
             android:name=".ListenService"
             android:exported="false"
