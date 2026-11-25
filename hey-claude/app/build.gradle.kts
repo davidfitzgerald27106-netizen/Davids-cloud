@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// When the build provides a signing key, every build is signed with the same
+// key, so a newer version installs over the older one.
+val signingKeystore: String? = System.getenv("SIGNING_KEYSTORE")
+
 android {
     namespace = "app.wakephrase"
     compileSdk = 34
@@ -11,14 +15,30 @@ android {
         applicationId = "app.wakephrase"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
     }
 
+    signingConfigs {
+        if (signingKeystore != null) {
+            create("fixed") {
+                storeFile = file(signingKeystore!!)
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_STORE_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            if (signingKeystore != null) {
+                signingConfig = signingConfigs.getByName("fixed")
+            }
+        }
         release {
             isMinifyEnabled = false
         }

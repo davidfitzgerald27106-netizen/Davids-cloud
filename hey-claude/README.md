@@ -9,13 +9,16 @@ affiliated with Anthropic.
 
 - Listens for the phrase on the phone itself. Audio is not recorded or sent anywhere.
 - Opens the Claude app when it hears the phrase.
+- Only analyses audio when there is sound above the room's background level.
+- Steps aside while another app is using the microphone.
+- Shows what it heard and how sure it was, with a slider for how sure it must be.
 - Shows a permanent notification while it is listening, with a Stop button.
 
 ## What it does not do
 
 - It cannot unlock the phone. From a locked screen it only wakes the display.
 - It does not start Claude's voice mode. You tap the voice icon once in Claude.
-- It does not restart by itself after the phone reboots. Open it and turn listening on.
+- It does not restart by itself after the phone reboots. It posts a reminder; one tap turns it back on.
 
 ## Install
 
@@ -26,8 +29,8 @@ affiliated with Anthropic.
 3. Open the app and work down the Setup list until every line says done.
 4. Tap "Turn listening on".
 
-Each build is signed with a fresh key, so to install a newer build, uninstall the
-old one first.
+Unless a signing key has been added to the repository's secrets, each build is
+signed with a throwaway key, so to install a newer build, uninstall the old one first.
 
 ## How it is built
 
