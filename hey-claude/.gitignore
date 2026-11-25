@@ -1,0 +1,6 @@
+.gradle/
+build/
+app/build/
+local.properties
+# The speech model is downloaded during the build, not stored here
+app/src/main/assets/model-en-us/
