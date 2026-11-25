@@ -17,7 +17,9 @@ affiliated with Anthropic.
 ## What it does not do
 
 - It cannot unlock the phone. From a locked screen it only wakes the display.
-- It does not start Claude's voice mode. You tap the voice icon once in Claude.
+- It does not start Claude's voice mode unless you switch on the optional
+  Accessibility permission. With it on, the app taps the voice button for you,
+  only in the seconds after the wake phrase, and only inside the Claude app.
 - It does not restart by itself after the phone reboots. It posts a reminder; one tap turns it back on.
 
 ## Install

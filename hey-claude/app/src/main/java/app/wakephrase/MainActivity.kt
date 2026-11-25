@@ -28,6 +28,7 @@ class MainActivity : Activity() {
     private lateinit var thresholdLabel: TextView
     private lateinit var heardView: TextView
     private lateinit var toggle: Button
+    private lateinit var voiceToggle: Button
     private var startRequested = false
 
     private val refresher = object : Runnable {
@@ -78,6 +79,14 @@ class MainActivity : Activity() {
                 }
             }
         })
+
+        voiceToggle = Button(this).apply {
+            setOnClickListener {
+                Prefs.setAutoVoice(prefs, !Prefs.autoVoice(prefs))
+                refresh()
+            }
+        }
+        column.addView(voiceToggle)
 
         thresholdLabel = TextView(this).apply {
             textSize = 15f
@@ -137,6 +146,12 @@ class MainActivity : Activity() {
             }
         })
         column.addView(Button(this).apply {
+            text = "Allow auto voice mode (Accessibility)"
+            setOnClickListener {
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }
+        })
+        column.addView(Button(this).apply {
             text = "Battery settings for this app"
             setOnClickListener {
                 startActivity(
@@ -153,6 +168,8 @@ class MainActivity : Activity() {
                 "- After a restart of the phone, tap the reminder to turn listening back on.\n" +
                 "- It cannot unlock the phone. From a locked screen it wakes the display.\n" +
                 "- It steps aside while another app is using the microphone.\n" +
+                "- Auto voice mode is optional. If Accessibility shows this app greyed out, " +
+                "open the app's info page, tap the three dots, and choose Allow restricted settings.\n" +
                 "- If Samsung puts this app to sleep, set its battery use to Unrestricted."
             textSize = 14f
             setPadding(0, pad, 0, 0)
@@ -228,13 +245,16 @@ class MainActivity : Activity() {
         statusView.text = "Status: ${ListenService.status}\n" +
             "Times opened since start: ${ListenService.heardCount}\n" +
             "Microphone: ${if (on) meter(ListenService.level) else "off"}"
+        voiceToggle.text =
+            if (Prefs.autoVoice(prefs)) "Auto voice mode: on" else "Auto voice mode: off"
         thresholdLabel.text = "How sure it must be: ${Prefs.threshold(prefs)}%"
         heardView.text = ListenService.recent()
         checklistView.text = "Setup\n" +
             "${mark(hasMic())} Microphone\n" +
             "${mark(hasNotifications())} Notifications\n" +
             "${mark(hasOverlay())} Open Claude from the background\n" +
-            "${mark(Launcher.find(this) != null)} Claude app installed"
+            "${mark(Launcher.find(this) != null)} Claude app installed\n" +
+            "${if (TapService.connected) "[done]" else "[optional]"} Auto voice mode (Accessibility)"
     }
 
     companion object {

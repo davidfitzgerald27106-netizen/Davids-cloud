@@ -309,6 +309,7 @@ class ListenService : Service() {
         wakeScreen()
         val opened = Launcher.open(this)
         setStatus(if (opened) "Heard it. Opened Claude." else "Heard it, but could not open Claude.")
+        if (opened && Prefs.autoVoice(prefs) && TapService.connected) TapService.request()
         main.removeCallbacks(resumeCheck)
         main.postDelayed(resumeCheck, RESUME_MS)
     }

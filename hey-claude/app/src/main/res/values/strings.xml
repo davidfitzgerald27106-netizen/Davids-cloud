@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hey Claude</string>
+    <string name="tap_description">Optional. Taps the voice mode button in the Claude app for you, only in the few seconds after you say the wake phrase. It is limited to the Claude app and does not read your messages.</string>
 </resources>

@@ -20,6 +20,10 @@ object Launcher {
         return pm.getLaunchIntentForPackage(match.activityInfo.packageName)
     }
 
+    /** The package name of the Claude app on this phone, if it is installed. */
+    fun packageName(context: Context): String? =
+        find(context)?.component?.packageName ?: find(context)?.`package`
+
     fun open(context: Context): Boolean {
         val intent = find(context) ?: return false
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
